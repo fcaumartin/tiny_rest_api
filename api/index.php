@@ -8,6 +8,8 @@ const DATABASE_USER = "dbuser";
 const DATABASE_PASSWORD = "fakefake";
 ##################################################
 
+$db = new PDO('mysql:host=' . DATABASE_HOST . ';dbname='. DATABASE_NAME .';charset=utf8mb4', DATABASE_USER, DATABASE_PASSWORD);
+$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 header("Content-type: application/json");
 
@@ -38,12 +40,19 @@ switch($rm) {
     case "POST":
         $json = file_get_contents('php://input', true);
         $data = json_decode($json);
-        var_dump($data);
-        die;
+        $props = get_object_vars($data);
+        $values = array_values($props);
+        $names = array_keys($props);
+        // var_dump($values);
         $query = "insert into $table ";
-        if ($id) {
-            $query .= " where id=$id";
-        }
+        $query .= "(" . implode(",", $names) . ")";
+        $query .= " values (" . implode("," array_fill(0, count($names), '?')) . ")"; 
+        var_dump($query);
+        die;
+        $prepared_query = $db->prepare($query);
+        $prepared_query->execute($values);
+        $id = $db->lastInsertId();
+        $query = "select * from $table where id=$id";
     break;
     
     case "PUT":
@@ -59,10 +68,9 @@ switch($rm) {
 }
 
 
-// echo "\n" . $query . "\n";
+echo "\n" . $query . "\n";
 
-$db = new PDO('mysql:host=' . DATABASE_HOST . ';dbname='. DATABASE_NAME .';charset=utf8mb4', DATABASE_USER, DATABASE_PASSWORD);
-$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
 
 if ($data) {
     $request = $db->query($query);

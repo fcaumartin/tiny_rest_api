@@ -11,8 +11,8 @@ Content-Type: application/json
 
 {
     "nom": "test1",
-    "prenom": "test1",
-    "ville": "test1",
+    "prenom": "test2",
+    "ville": "test3"
 }
 ###
 
