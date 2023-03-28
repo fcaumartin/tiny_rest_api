@@ -86,8 +86,35 @@ switch($rm) {
     echo json_encode($result);
 
 
-// function get_ressource($db, $table, $id) {
+#####################################################
+# Simple CRUD functions
+#####################################################
 
-//     $db->prepare("select * from $table where id=?";
+function get_ressources($db, $table) {
 
-// }
+    $prepared_query = $db->prepare("select * from $table");
+    $result = $prepared_query->execute();
+
+    return $result->fetchAll(PDO::FETCH_OBJ);
+}
+
+function get_ressource($db, $table, $id) {
+
+    $prepared_query = $db->prepare("select * from $table where id=?");
+    $result = $prepared_query->execute($id);
+
+    return $result->fetch(PDO::FETCH_OBJ);
+}
+
+
+function post_ressource($db, $table) {
+
+}
+
+function put_ressource($db, $table, $id) {
+
+}
+
+function delete_ressource($db, $table, $id) {
+
+}
