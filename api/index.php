@@ -20,12 +20,6 @@ $table = substr($uri_element[2], 0, -1);
 $id = $uri_element[3];
 
 
-// echo ($rm) . "\n";
-// echo ($uri) . "\n";
-// echo json_encode($uri_element) . "\n";
-// echo json_encode($table) . "\n";
-// echo json_encode($id) . "\n";
-
 $query = "";
 $data = null;
 
@@ -46,9 +40,9 @@ switch($rm) {
         // var_dump($values);
         $query = "insert into $table ";
         $query .= "(" . implode(",", $names) . ")";
-        $query .= " values (" . implode("," array_fill(0, count($names), '?')) . ")"; 
-        var_dump($query);
-        die;
+        $query .= " values (" . implode(",", array_fill(0, count($names), '?')) . ")"; 
+        // var_dump($query);
+        // die;
         $prepared_query = $db->prepare($query);
         $prepared_query->execute($values);
         $id = $db->lastInsertId();
@@ -56,23 +50,32 @@ switch($rm) {
     break;
     
     case "PUT":
-
+        $json = file_get_contents('php://input', true);
+        $data = json_decode($json);
+        $props = get_object_vars($data);
+        $values = array_values($props);
+        $names = array_keys($props);
+        $set_names = array_map(fn($v): string => $v."=?", $names);
+        // var_dump($values);
+        $query = "update $table ";
+        $query .= "set " . implode(",", $set_names);
+        $query .= " where id=?";
+        array_push($values, $id);
+        // var_dump($query);
+        // die;
+        $prepared_query = $db->prepare($query);
+        $prepared_query->execute($values);
+        // $id = $db->lastInsertId();
+        $query = "select * from $table where id=$id";
     break;
 
     case "DELETE":
-        $query = "select * from $table";
-        if ($id) {
-            $query .= " where id=$id";
-        }
+        $query = "delete from $table";
+        $query .= " where id=$id";
     break;
 }
 
 
-echo "\n" . $query . "\n";
-
-
-
-if ($data) {
     $request = $db->query($query);
     if ($id) {
         $result = $request->fetch(PDO::FETCH_OBJ);
@@ -81,14 +84,10 @@ if ($data) {
         $result = $request->fetchAll(PDO::FETCH_OBJ);
     }
     echo json_encode($result);
-}
-else {
-    $request = $db->query($query);
-    if ($id) {
-        $result = $request->fetch(PDO::FETCH_OBJ);
-    }
-    else {
-        $result = $request->fetchAll(PDO::FETCH_OBJ);
-    }
-    echo json_encode($result);
-}
+
+
+// function get_ressource($db, $table, $id) {
+
+//     $db->prepare("select * from $table where id=?";
+
+// }
