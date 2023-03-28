@@ -1,0 +1,24 @@
+GET http://127.0.0.1:8000/api/clients
+
+###
+
+GET http://127.0.0.1:8000/api/clients/2
+
+###
+
+POST http://127.0.0.1:8000/api/clients
+Content-Type: application/json
+
+{
+    "nom": "test1",
+    "prenom": "test1",
+    "ville": "test1",
+}
+###
+
+PUT http://127.0.0.1:8000/api/clients/2
+
+###
+
+DELETE http://127.0.0.1:8000/api/clients/2
+
